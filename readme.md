@@ -1,6 +1,7 @@
 ## RunnerGroup
 
-[![GoDoc](https://pkg.go.dev/golang.cc/runnergroup?status.svg)](https://pkg.go.dev/golang.cc/runnergroup)
+[![GoDoc](https://img.shields.io/badge/Go-Doc-blue.svg)](https://pkg.go.dev/golang.cc/runnergroup)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/txthinking/runnergroup/blob/master/LICENSE)
 
 RunnerGroup is like [sync.WaitGroup](https://pkg.go.dev/sync?tab=doc#WaitGroup), the diffrence is if one task stops, all will be stopped.
 
