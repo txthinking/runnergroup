@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"golang.cc/runnergroup"
+	"github.com/txthinking/runnergroup"
 )
 
 func Example() {
