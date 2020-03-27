@@ -16,6 +16,7 @@ type Runner struct {
 	// Start is a blocking function.
 	Start func() error
 	// Stop is not a blocking function, if Stop called, must let Start return.
+	// Notice: Stop maybe called multi times even if before start.
 	Stop   func() error
 	lock   sync.Mutex
 	status int
