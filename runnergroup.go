@@ -67,8 +67,8 @@ func (g *RunnerGroup) Wait() error {
 }
 
 // Call Done after Wait, if you want to stop all.
-// return the stop's return that is not nil.
-// return nil means all stops return nil or all starts ended caused by itself.
+// return the stop's return which is not nil, do not guarantee,
+// because starts may ended caused by itself.
 func (g *RunnerGroup) Done() error {
 	var e error
 	for _, v := range g.runners {
