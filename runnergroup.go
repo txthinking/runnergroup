@@ -2,21 +2,23 @@ package runnergroup
 
 import (
 	"sync"
+	"time"
 )
 
 // RunnerGroup is like sync.WaitGroup,
 // the diffrence is if one task stops, all will be stopped.
 type RunnerGroup struct {
 	runners []*Runner
-	once    sync.Once
 	done    chan byte
 }
 
 type Runner struct {
-	// Start is a blocking func, until error or Stop called.
+	// Start is a blocking function.
 	Start func() error
-	// After Stop called, the Start func must stop.
-	Stop func() error
+	// Stop is not a blocking function, if Stop called, must let Start return.
+	Stop   func() error
+	lock   sync.Mutex
+	status int
 }
 
 func New() *RunnerGroup {
@@ -31,46 +33,60 @@ func (g *RunnerGroup) Add(r *Runner) {
 }
 
 // Call Wait after all task have been added,
-// Return the first stopped Start's result, or return nil if stopped caused by Done.
+// Return the first ended start's result.
 func (g *RunnerGroup) Wait() error {
-	errch := make(chan error)
+	e := make(chan error)
 	for _, v := range g.runners {
+		v.status = 1
 		go func(v *Runner) {
 			err := v.Start()
+			v.lock.Lock()
+			v.status = 0
+			v.lock.Unlock()
 			select {
 			case <-g.done:
-			case errch <- err:
-				g.once.Do(func() {
-					close(g.done)
-					for _, v := range g.runners {
-						_ = v.Stop()
-					}
-				})
+			case e <- err:
 			}
 		}(v)
 	}
-	select {
-	case <-g.done:
-		return nil
-	case err := <-errch:
-		return err
+	err := <-e
+	for _, v := range g.runners {
+		for {
+			v.lock.Lock()
+			if v.status == 0 {
+				v.lock.Unlock()
+				break
+			}
+			v.lock.Unlock()
+			_ = v.Stop()
+			time.Sleep(300 * time.Millisecond)
+		}
 	}
-	return nil
+	close(g.done)
+	return err
 }
 
 // Call Done after Wait, if you want to stop all.
-// According to the order of Add, return the first error that is not nil, or nil means all Stops have ended normally.
+// return the stop's return that is not nil.
+// return nil means all stops return nil or all starts ended caused by itself.
 func (g *RunnerGroup) Done() error {
 	var e error
-	g.once.Do(func() {
-		close(g.done)
-		for _, v := range g.runners {
+	for _, v := range g.runners {
+		for {
+			v.lock.Lock()
+			if v.status == 0 {
+				v.lock.Unlock()
+				break
+			}
+			v.lock.Unlock()
 			if err := v.Stop(); err != nil {
 				if e == nil {
 					e = err
 				}
 			}
+			time.Sleep(300 * time.Millisecond)
 		}
-	})
+	}
+	<-g.done
 	return e
 }
