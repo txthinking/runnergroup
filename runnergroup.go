@@ -66,10 +66,13 @@ func (g *RunnerGroup) Wait() error {
 	return err
 }
 
-// Call Done after Wait, if you want to stop all.
+// Call Done if you want to stop all.
 // return the stop's return which is not nil, do not guarantee,
 // because starts may ended caused by itself.
 func (g *RunnerGroup) Done() error {
+	if len(g.runners) == 0 {
+		return nil
+	}
 	var e error
 	for _, v := range g.runners {
 		for {
