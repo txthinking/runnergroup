@@ -11,7 +11,7 @@ RunnerGroup is like [sync.WaitGroup](https://pkg.go.dev/sync?tab=doc#WaitGroup),
 
 ### Example
 
-```
+```go
 import (
 	"context"
 	"log"
