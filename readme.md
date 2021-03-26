@@ -57,3 +57,11 @@ func Example() {
 }
 
 ```
+
+## Author
+
+A project by [txthinking](https://www.txthinking.com)
+
+## License
+
+Licensed under The MIT License
