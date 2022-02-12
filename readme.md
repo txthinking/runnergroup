@@ -3,8 +3,8 @@
 [![GoDoc](https://img.shields.io/badge/Go-Doc-blue.svg)](https://godoc.org/github.com/txthinking/runnergroup)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/txthinking/runnergroup/blob/master/LICENSE)
 
-[🗣 Talks](https://t.me/txthinking_talks)
-[💬 Join](https://join.txthinking.com)
+[🗣 News](https://t.me/txthinking_news)
+[💬 Chat](https://join.txthinking.com)
 [🩸 Youtube](https://www.youtube.com/txthinking) 
 [❤️ Sponsor](https://github.com/sponsors/txthinking)
 
