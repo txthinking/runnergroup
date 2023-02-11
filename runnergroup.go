@@ -9,7 +9,7 @@ import (
 // the diffrence is if one task stops, all will be stopped.
 type RunnerGroup struct {
 	Runners []*Runner
-	Done    chan byte
+	End     chan byte
 }
 
 type Runner struct {
@@ -25,7 +25,7 @@ type Runner struct {
 func New() *RunnerGroup {
 	g := &RunnerGroup{}
 	g.Runners = make([]*Runner, 0)
-	g.Done = make(chan byte)
+	g.End = make(chan byte)
 	return g
 }
 
@@ -45,7 +45,7 @@ func (g *RunnerGroup) Wait() error {
 			v.status = 0
 			v.lock.Unlock()
 			select {
-			case <-g.Done:
+			case <-g.End:
 			case e <- err:
 			}
 		}(v)
@@ -63,7 +63,7 @@ func (g *RunnerGroup) Wait() error {
 			time.Sleep(300 * time.Millisecond)
 		}
 	}
-	close(g.Done)
+	close(g.End)
 	return err
 }
 
@@ -91,6 +91,6 @@ func (g *RunnerGroup) Done() error {
 			time.Sleep(300 * time.Millisecond)
 		}
 	}
-	<-g.Done
+	<-g.End
 	return e
 }
