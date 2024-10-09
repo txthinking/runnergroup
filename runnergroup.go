@@ -39,13 +39,13 @@ func (g *RunnerGroup) Add(r *Runner) {
 
 // Call Wait after all tasks have been added,
 func (g *RunnerGroup) Wait() error {
+	var wg1 sync.WaitGroup
+	wg1.Add(len(g.Runners))
 	g.once_stop = sync.OnceFunc(func() {
 		time.Sleep(3 * time.Second)
-		var wg sync.WaitGroup
 		for i, v := range g.Runners {
-			wg.Add(1)
 			go func(i int, v *Runner) {
-				defer wg.Done()
+				defer wg1.Done()
 				g.mutex.Lock()
 				if _, ok := g.start_results[i]; ok {
 					g.stop_results[i] = errors.New("_")
@@ -59,12 +59,11 @@ func (g *RunnerGroup) Wait() error {
 				g.mutex.Unlock()
 			}(i, v)
 		}
-		wg.Wait()
 	})
 
 	var wg sync.WaitGroup
+	wg.Add(len(g.Runners))
 	for i, v := range g.Runners {
-		wg.Add(1)
 		go func(i int, v *Runner) {
 			defer wg.Done()
 			err := v.Start()
@@ -75,6 +74,7 @@ func (g *RunnerGroup) Wait() error {
 		}(i, v)
 	}
 	wg.Wait()
+	wg1.Wait()
 
 	g.mutex.Lock()
 	defer g.mutex.Unlock()

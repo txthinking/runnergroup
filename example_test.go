@@ -52,6 +52,7 @@ func Example() {
 		},
 		Stop: func() error {
 			log.Println("stop3")
+			time.Sleep(5 * time.Second)
 			return s3.Shutdown(context.Background())
 		},
 	})
