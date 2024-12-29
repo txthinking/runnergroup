@@ -2,7 +2,6 @@ package runnergroup
 
 import (
 	"encoding/json"
-	"errors"
 	"sync"
 	"time"
 )
@@ -17,6 +16,7 @@ type RunnerGroup struct {
 	mutex         *sync.Mutex
 }
 
+// Each Start and Stop in Runner will be called once
 type Runner struct {
 	// Start is a blocking function.
 	Start func() error
@@ -46,13 +46,6 @@ func (g *RunnerGroup) Wait() error {
 		for i, v := range g.Runners {
 			go func(i int, v *Runner) {
 				defer wg1.Done()
-				g.mutex.Lock()
-				if _, ok := g.start_results[i]; ok {
-					g.stop_results[i] = errors.New("_")
-					g.mutex.Unlock()
-					return
-				}
-				g.mutex.Unlock()
 				err := v.Stop()
 				g.mutex.Lock()
 				g.stop_results[i] = err
