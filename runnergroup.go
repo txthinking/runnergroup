@@ -106,7 +106,9 @@ func (g *RunnerGroup) Wait() error {
 
 // Call Done to stop all tasks.
 func (g *RunnerGroup) Done() error {
-	g.once_stop()
+	if g.once_stop != nil {
+		g.once_stop()
+	}
 	// compatible
 	return nil
 }
